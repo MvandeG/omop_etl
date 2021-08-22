@@ -1,0 +1,2 @@
+person_id,condition_occurrence_id,condition_concept_id,condition_start_datetime,condition_type_concept_id,condition_status_concept_id,condition_source_concept_id
+48,1,380378,01-01-1900,0,0,0
