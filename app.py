@@ -28,10 +28,9 @@ def pdfparser(pdf):
     pdf -- absolute/relative filepath of PDF
     """
     csv = pdf.rstrip(".pdf")+".csv"
+    print("Parsing PDF to file: {}".format(csv))
     tabula.convert_into(pdf, csv, pages="1")
     dataString = str(tabula.read_pdf(pdf, pages='2')[0])
-    print(dataString)
-    print(pdf)
     header = dataString.split("\n")[0].split("Participant")[1]
     rest = dataString.split("\n")[1].split(pdf.split("/")[-1].rstrip(".pdf"))[1]
     
@@ -48,6 +47,7 @@ def vcffilter(vcf,csv):
     pdf -- absolute/relative filepath of PDF
     """
     id = csv.rstrip(".csv")
+    print("Parsing VCF to file: {}_chr21_ann_flt_10.csv".format(id))
     count = 0
     input = open(vcf, "r")
     chr21 = open("{}_chr21.vcf".format(id),"w")
@@ -57,18 +57,14 @@ def vcffilter(vcf,csv):
             chr21.write(line)
     input.close()
     chr21.close()
-    print(id)
     snpeff = """java -Xmx4g -jar "snpEff.jar" GRCh37.75 -t {0}_chr21.vcf > {0}_chr21_ann.vcf""".format(id)
-    print(snpeff)
     subprocess.call(snpeff,shell=True)
     ann = open("{}_chr21_ann.vcf".format(id),"r")
-    print(ann)
     for line in ann:
         if line.find("frameshift") != -1 or line.find("missense") != -1:
             print(line)
             chr21_ann_flt_10.write(re.sub('\t',',',re.sub('(^|[\t])([^\t]*\,[^\t\n]*)', r'\1"\2"', line)))
             count+=1 
-        print(count)
         if count == 10:
                     break
     ann.close()
@@ -81,17 +77,16 @@ def postgres():
         table = file.split("/")[-1].rstrip(".csv")
         f= open(file,"r")
         columns = f.readline().replace(",",", ")
-        print(columns)
         query = """COPY {0}({1})
         FROM '{2}'
         DELIMITER ','
         CSV HEADER;""".format(table,columns,file)
-        print(query)
         db_cursor.execute(query)
         db_conn.commit()
 
 if __name__ == "__main__":
     pdf, vcf = sys.argv[1], sys.argv[2]
+    print("PDF file: {0}, VCF file: {1}".format(pdf,vcf))
     csv = pdfparser(pdf)
     vcffilter(vcf,csv)
     input("Use Usagi or some other means of mapping, press ENTER when ready to select output...")
