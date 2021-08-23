@@ -25,7 +25,7 @@ def pdfparser(pdf):
     Read data from PDF and output to CSV format.
     
     Keyword arguments:
-    pdf -- absolute/relative filepath of PDF
+    pdf -- absolute/relative filepath of PDF file
     """
     csv = pdf.rstrip(".pdf")+".csv"
     print("Parsing PDF to file: {}".format(csv))
@@ -44,7 +44,8 @@ def vcffilter(vcf,csv):
     Read data from VCF and output 10 frameshift or missense variants to CSV format.
     
     Keyword arguments:
-    pdf -- absolute/relative filepath of PDF
+    vcf -- absolute/relative filepath of VCF file
+    csv -- CSV file from PDF
     """
     id = csv.rstrip(".csv")
     print("Parsing VCF to file: {}_chr21_ann_flt_10.csv".format(id))
